@@ -116,3 +116,51 @@ TEST(OrderedTable, can_clear) {
 	ot.clear();
 	ASSERT_EQ(ot.getSize(), 0);
 }
+
+TEST(HashTable, new_hash_table_empty) {
+	HashTable ht(5);
+	ASSERT_EQ(ht.getSize(), 0);
+}
+
+TEST(HashTable, can_add_elements) {
+	HashTable ht(5);
+	ht.insert(1, 12);
+	ht.insert(2, 24);
+	ASSERT_EQ(ht.getSize(), 2);
+}
+
+TEST(HashTable, can_find_elements) {
+	HashTable ht(5);
+	ht.insert(1, 12);
+	ASSERT_EQ(ht.find(1)->second, 12);
+}
+
+TEST(HashTable, can_erase_elements) {
+	HashTable ht(5);
+	ht.insert(1, 12);
+	ht.insert(2, 24);
+	ht.erase(1);
+	ASSERT_EQ(ht.find(2)->second, 24);
+}
+
+TEST(HashTable, open_addressing_works) {
+	HashTable ht(5);
+	ht.insert(1, 12);
+	ht.insert(2, 24);
+	ht.insert(3, 36);
+	ht.insert(4, 48);
+	ht.insert(5, 60);
+	ht.erase(5);
+	ht.erase(1);
+	ht.insert(6, 72);
+	ht.erase(3);
+	ASSERT_EQ(ht.find(4)->second, 48);
+}
+
+TEST(HashTable, can_clear) {
+	HashTable ht(5);
+	ht.insert(1, 12);
+	ht.insert(2, 24);
+	ht.clear();
+	ASSERT_EQ(ht.getSize(), 0);
+}

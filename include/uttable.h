@@ -156,3 +156,76 @@ public:
 		else return false;
 	}
 };
+
+class HashTable: public TableByArray<int> {
+private:
+	int nHashes;
+	std::vector<bool> taken;
+	std::vector<bool> elemExisted;
+	unsigned int hash(int key) {
+		srand(key);
+		return rand() % nHashes;
+	}
+	unsigned int next(int h) {
+		if (h == nHashes - 1) return 0;
+		else return h + 1;
+	}
+	unsigned int findIndex(unsigned int key) {
+		unsigned int origHash = hash(key), h = origHash;
+		while (true) {
+			if (storage[h].first == key && taken[h]) return h;
+			if (!elemExisted[h]) return -1;
+			h = next(h);
+			if (h == origHash) return -1;
+		}
+	}
+public:
+	HashTable(int n) {
+		nHashes = n;
+		size = 0;
+		for (int i = 0; i < nHashes; i++) {
+			storage.push_back(Pair<int>(NULL, NULL));
+			elemExisted.push_back(false);
+			taken.push_back(false);
+		}
+	}
+	HashTable(const HashTable& tb) {
+		storage = tb.storage;
+		elemExisted = tb.elemExisted;
+		taken = tb.taken;
+		nHashes = tb.nHashes;
+		size = tb.size;
+	}
+	void insert(unsigned int key, const int& elem) {
+		unsigned int h = hash(key);
+		if (size == nHashes) throw "Table full";
+		while (taken[h])
+			h = next(h);
+		storage[h] = Pair<int>(key, elem);
+		taken[h] = true;
+		elemExisted[h] = true;
+		size++;
+	}
+	void erase(unsigned int key) {
+		unsigned int h = findIndex(key);
+		if (h == -1) throw "No field found with given key";
+		taken[h] = false;
+		size--;
+	}
+	Pair<int>* find(unsigned int key) {
+		unsigned int h = findIndex(key);
+		if (h == -1) throw "No field found with given key";
+		else return &(storage[h]);
+	}
+	void clear() {
+		for (int i = 0; i < nHashes; i++) {
+			taken[i] == false;
+			elemExisted[i] = false;
+		}
+		size = 0;
+	}
+	bool isEmpty() {
+		if (size == 0) return true;
+		else return false;
+	}
+};
