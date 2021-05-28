@@ -1,4 +1,5 @@
 #include "uttable.h"
+#include "utavltree.h"
 
 #include <gtest.h>
 
@@ -163,4 +164,35 @@ TEST(HashTable, can_clear) {
 	ht.insert(2, 24);
 	ht.clear();
 	ASSERT_EQ(ht.getSize(), 0);
+}
+
+TEST(DTree, can_create_tree) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	ASSERT_NO_THROW(DTree<int> tree(v, 2));
+}
+
+TEST(DTree, can_find_left_child) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	ASSERT_EQ(tree.storage[tree.leftChild(0)], 4);
+}
+
+TEST(DTree, can_find_right_child) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	ASSERT_EQ(tree.storage[tree.rightChild(0)], 2);
+}
+
+TEST(DTree, can_find_right_child_if_less_than_d_children) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	ASSERT_EQ(tree.storage[tree.rightChild(2)], 6);
+}
+
+TEST(DTree, heapsort_works) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	tree.heapsort();
+	std::vector<int> sorted = { 1,2,3,4,5,6 };
+	ASSERT_EQ(tree.storage, sorted);
 }
