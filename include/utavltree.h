@@ -10,6 +10,7 @@ public:
 	int heapSize;
 	DTree(std::vector<T> v, int dn) {
 		storage = v;
+		makeHeap();
 		d = dn;
 	}
 	DTree(const DTree& tree) {
@@ -17,38 +18,18 @@ public:
 		d = tree.d;
 		heapSize = tree.heapSize;
 	}
-	int child(int i, int number) {
-		int edge = 0, levelSize = 1;
-		while (edge + levelSize <= i) {
-			edge += levelSize;
-			levelSize *= d;
-		}
-		int rightEdge = edge + levelSize;
-		int placeInLevel = i - edge;
-		int result = rightEdge + placeInLevel * d + number;
-		if (result >= storage.size()) return -1;
-		else return result;
-	}
 	int leftChild(int i) {
-		return child(i, 0);
+		if (i * d + 1 >= storage.size()) return -1;
+		return i * d + 1;
 	}
 	int rightChild(int i) {
-		for (int j = 0; j < d; j++) {
-			if (child(i, j) == -1)
-				return child(i, j - 1);
-		}
-		return child(i, d - 1);
+		if (i * d + 1 >= storage.size()) return -1;
+		else if ((i + 1) * d < storage.size()) return (i + 1) * d;
+		else return storage.size() - 1;
 	}
 	int parent(int i) {
 		if (i == 0) return -1;
-		int edge = 0, levelSize = 1;
-		while (edge + levelSize + levelSize * d <= i) {
-			edge += levelSize;
-			levelSize *= d;
-		}
-		int leftEdge = edge + levelSize;
-		int placeInLevel = i - leftEdge;
-		return edge + placeInLevel / d;
+		else return (i - 1) / d;
 	}
 	int minChild(int i) {
 		int minIndex = -1;
