@@ -1,13 +1,20 @@
-﻿
+﻿#pragma once
 #include <iostream>
 #include <vector>
 
 template<class T> struct Pair {
 	unsigned int first;
 	T second;
+	Pair() {
+
+	}
 	Pair(unsigned int n1, T n2) {
 		first = n1;
 		second = n2;
+	}
+	Pair(const Pair<T>& p) {
+		first = p.first;
+		second = p.second;
 	}
 };
 

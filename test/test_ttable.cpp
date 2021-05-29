@@ -1,4 +1,5 @@
 #include "uttable.h"
+#include "utavltree.h"
 
 #include <gtest.h>
 
@@ -163,4 +164,106 @@ TEST(HashTable, can_clear) {
 	ht.insert(2, 24);
 	ht.clear();
 	ASSERT_EQ(ht.getSize(), 0);
+}
+
+TEST(DTree, can_create_tree) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	ASSERT_NO_THROW(DTree<int> tree(v, 2));
+}
+
+TEST(DTree, can_find_left_child) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	ASSERT_EQ(tree.storage[tree.leftChild(0)], 4);
+}
+
+TEST(DTree, can_find_right_child) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	ASSERT_EQ(tree.storage[tree.rightChild(0)], 2);
+}
+
+TEST(DTree, can_find_right_child_if_less_than_d_children) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	ASSERT_EQ(tree.storage[tree.rightChild(2)], 6);
+}
+
+TEST(DTree, heapsort_works) {
+	std::vector<int> v = { 3,4,2,1,5,6 };
+	DTree<int> tree(v, 2);
+	tree.heapsort();
+	std::vector<int> sorted = { 1,2,3,4,5,6 };
+	ASSERT_EQ(tree.storage, sorted);
+}
+
+template<class T> void shuffle(std::vector<Pair<T>> v, size_t n)
+{
+	if (n > 1)
+	{
+		size_t i;
+		for (i = 0; i < n - 1; i++)
+		{
+			size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+			Pair<T> temp(v[j].first, v[j].second);
+			v[j].first = v[i].first;
+			v[j].second = v[i].second;
+			v[i].first = temp.first;
+			v[i].second = temp.second;
+		}
+	}
+}
+
+TEST(AVLTree, can_create_tree) {
+	std::vector<Pair<int>> v;
+	for (int i = 0; i < 15; i++) {
+		Pair<int> p(i, i);
+		v.push_back(p);
+	}
+	srand(1);
+	shuffle(v, 15);
+	ASSERT_NO_THROW(AVLTree<int> tree(v));
+}
+
+TEST(AVLTree, tree_balanced) {
+	std::vector<Pair<int>> v;
+	for (int i = 0; i < 15; i++) {
+		Pair<int> p(i, i);
+		v.push_back(p);
+	}
+	srand(1);
+	shuffle(v, 15);
+	AVLTree<int> tree(v);
+	ASSERT_TRUE(tree.isBalanced(tree.root));
+}
+
+TEST(AVLTree, tree_sorted) {
+	std::vector<Pair<int>> v;
+	for (int i = 0; i < 15; i++) {
+		Pair<int> p(i, i);
+		v.push_back(p);
+	}
+	srand(1);
+	shuffle(v, 15);
+	AVLTree<int> tree(v);
+	v = tree.sort();
+	bool right = true;
+	for (int i = 0; i < 15; i++) {
+		if (v[i].first != i) right = false;
+	}
+	ASSERT_EQ(right, true);
+}
+
+TEST(AVLTree, can_find_element) {
+	std::vector<Pair<int>> v;
+	for (int i = 0; i < 15; i++) {
+		Pair<int> p(i, i);
+		v.push_back(p);
+	}
+	std::vector<Pair<int>> sorted = v;
+	srand(1);
+	shuffle(v, 15);
+	AVLTree<int> tree(v);
+	TreeNode<Pair<int>>* pn = tree.find(13);
+	ASSERT_EQ(pn->data.first, 13);
 }
